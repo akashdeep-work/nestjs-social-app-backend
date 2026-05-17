@@ -1,0 +1,49 @@
+services:
+  social-app-backend:
+    hostname: social-app-backend-${NODE_ENV}
+    container_name: social-app-backend-${NODE_ENV}
+    command: 'npm run start:debug'
+    ports:
+      - '${SOCIAL_APP_HTTP_PORT}:8000'
+    build:
+      context: ./social-app
+      target: ${DOCKER_TARGET}  # dynamically picks dev/prod stage
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      # Conditional live code mount
+      - ${HOST_CODE_VOLUME}
+      - social-app-backend-data-${NODE_ENV}:/usr/src/app/data/
+    env_file:
+      - ./social-app/.env.${NODE_ENV}
+    environment:
+      - USE_LOCAL_CONSOLE_FOR_AUDIT=true
+    dns:
+     - 8.8.8.8
+     - 1.1.1.1
+    networks:
+      - my-bridge-net
+      - ${NETWORK_NAME}
+volumes:
+  social-app-backend-data-dev:
+  social-app-backend-data-test:
+  social-app-backend-data-staging:
+  social-app-backend-data-prod:
+networks:
+  # required for user authentication and permissions
+  # declare external network
+  my-bridge-net:
+    name: my-bridge-net
+    driver: bridge
+  my-local-network-dev:
+    name: my-local-network-dev
+    external: true
+  my-local-network-test:
+    name: my-local-network-test
+    external: true
+  my-local-network-staging:
+    name: my-local-network-staging
+    external: true
+  my-local-network-prod:
+    name: my-local-network-prod
+    external: true
