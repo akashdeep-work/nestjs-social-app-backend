@@ -1,8 +1,0 @@
-**/.git
-**/node_modules
-/scripts
-Dockerfile
-README.md
-.env
-*.yml
-jest.config.js
